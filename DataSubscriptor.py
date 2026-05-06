@@ -1,9 +1,14 @@
 import paho.mqtt.client as mqtt
 
-# Conection parameters
+# Conection parameters (locals mqttexplorer)
 broker = "localhost"
 port = 1883
-topic = "casa/habitacion/temperatura" # change it with real topic
+topic = "sensores/puerto/pm5320" # change it with real topic
+
+# ThingsBoard parameters
+broker = "broker.hivemq.com" # Connection with mosquitto
+port = 1883
+topic = "thingsboard/telemetry" # change it with real topic
 
 # Callback
 
@@ -17,7 +22,9 @@ def on_connect(client, userdata, flag, rc):
 
 
 def on_message(client, userdata, msg):
-    print(f"message received: {msg.payload.decode()}")
+    print("\nNew message received!")
+    print(f"Topic: {msg.topic}")
+    print(f"message: {msg.payload.decode()}\n")
 
 # Mqtt Client
 client = mqtt.Client()

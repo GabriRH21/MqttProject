@@ -1,11 +1,13 @@
 import paho.mqtt.client as mqtt
 from enum import Enum
 import time
+import json
 
 # Conection parameters
-broker = "localhost"
+broker = "mqtt.eu.thingsboard.cloud" # Connection with mosquitto
 port = 1883
-topic = "casa/habitacion/temperatura" # change it with real topic
+accessToken = "tI2wsG00e0qLZteUrE0J" # token for thingsboard test
+topic = "v1/devices/me/telemetry" # change it with real topic
 
 # Callback
 def on_connect(client, userdata, flag, rc):
@@ -37,12 +39,11 @@ client = mqtt.Client()
 
 # Callback assignation
 client.on_connect = on_connect
+client.username_pw_set(accessToken)
 
 # Broker Connection
 client.connect(broker, port, 60)
-
-# Looping
-client.loop_start()
+client.loop_start()                    # For this test its fine, 
 
 #Sender
 class Columnas(Enum):
@@ -59,18 +60,20 @@ class Columnas(Enum):
 
 datos = leer_datos_txt("datos.txt")
 for fila in datos:
-    topic = fila[Columnas.TOPIC.value]
+    #topic = fila[Columnas.TOPIC.value]
+    payload = {}
 
-    frec = fila[Columnas.FRECUENCIA.value]
     v1 = fila[Columnas.V1.value]
 
     if v1 == "":
         continue
-    
-    client.publish(topic, v1)
+    payload["v1"] = v1
+    client.publish(topic, json.dumps(payload))
     #if frec != "":
     #    client.publish(topic, frec)
     
-    print("Sent:")
+    print("Sent!")
 
     time.sleep(2)
+
+# its working but i should add a try block to end the connection safety
